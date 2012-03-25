@@ -52,9 +52,9 @@ class GoBoard(Scatter):
         with self.canvas:
             Rectangle(source=resource_find("board.png"), size=self.size)
             Color(0,0,0)
-            x_min = left + self._boxwidth / 2
+            x_min = left + int( self._boxwidth / 2 )
             x_max = x_min + self._boxwidth * (self.stones - 1)
-            y_min = bottom + self._boxheight / 2
+            y_min = bottom + int( self._boxheight / 2 )
             y_max = y_min + self._boxheight * (self.stones - 1)
             for x in range(x_min, x_max+1, self._boxwidth):
                 Line( points=( x,y_min, x,y_max ) )

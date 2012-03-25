@@ -9,11 +9,12 @@ import re
 import kivy
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.scatter import Scatter
 from kivy.logger import Logger
 from kivy.core.image import Image
 from kivy.config import Config
 from kivy.properties import NumericProperty, StringProperty
-from kivy.graphics import Rectangle, Line
+from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.resources import resource_find
 
 from PIL import Image
@@ -28,11 +29,14 @@ class GoGame(Widget):
 
 
 # 9x9, 13x13, 17x17, or 19x19
-class GoBoard(Widget):
+class GoBoard(Scatter):
     stones = NumericProperty(0)
     padding = NumericProperty(10)
 
     def __init__(self, **kwargs):
+        kwargs['do_rotation'] = False
+        kwargs['do_scale'] = False
+        kwargs['do_translation'] = False
         super(GoBoard, self).__init__(**kwargs)
 
         self._boxwidth  = int( (self.width  - 2 * self.padding) / self.stones )
@@ -46,11 +50,16 @@ class GoBoard(Widget):
 
         self.board = [ [ None for i in range(self.stones) ] for j in range(self.stones) ]
         with self.canvas:
-            Rectangle(source=resource_find("board.png"), pos=self.pos, size=self.size)
-            Line( points=( px['left'],px['bottom'], px['left'],px['top'],
-                           px['right'],px['top'],   px['right'],px['bottom'],
-                           px['left'],px['bottom']
-                         ))
+            Rectangle(source=resource_find("board.png"), size=self.size)
+            Color(0,0,0)
+            x_min = left + self._boxwidth / 2
+            x_max = x_min + self._boxwidth * (self.stones - 1)
+            y_min = bottom + self._boxheight / 2
+            y_max = y_min + self._boxheight * (self.stones - 1)
+            for x in range(x_min, x_max+1, self._boxwidth):
+                Line( points=( x,y_min, x,y_max ) )
+            for y in range(y_min, y_max+1, self._boxheight):
+                Line( points=( x_min,y, x_max,y ) )
 
 
 class GoStone(Widget):

@@ -61,6 +61,17 @@ class GoBoard(Scatter):
             for y in range(y_min, y_max+1, self._boxheight):
                 Line( points=( x_min,y, x_max,y ) )
 
+    def on_touch_down(self,touch):
+        # Either pick up existing piece or create new
+        #   - do we need to process motion, or can we pass to the new piece?
+        return True
+
+    def on_touch_move(self,touch):
+        pass
+
+    def on_touch_up(self,touch):
+        pass
+
 
 class GoStone(Widget):
     turn_number = NumericProperty(0)

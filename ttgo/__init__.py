@@ -11,36 +11,43 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.scatter import Scatter
 from kivy.logger import Logger
-from kivy.core.image import Image
 from kivy.config import Config
-from kivy.properties import NumericProperty, StringProperty
+from kivy.properties import NumericProperty, StringProperty, BooleanProperty
 from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.resources import resource_find
-
-from PIL import Image
+from kivy.animation import Animation
+from kivy.uix.image import Image
 
 
 class GoGame(Widget):
     def __init__(self, **kwargs):
         super(GoGame, self).__init__(**kwargs)
+        self.player = 'black'
         s = min( Config.getint('graphics', 'width'), Config.getint('graphics', 'height') ) - 50
-        self.board = GoBoard( stones=19, pos=(25,25), size=(s,s) )
+        self.board = GoBoard( stones=19, pos=(25,25), size=(s,s), game=self )
         self.add_widget( self.board )
+
+    def on_play(self,i,j):
+        if self.player == 'black':
+            self.player = 'white'
+        else:
+            self.player = 'black'
 
 
 # 9x9, 13x13, 17x17, or 19x19
 class GoBoard(Scatter):
-    stones = NumericProperty(0)
+    stones  = NumericProperty(0)
     padding = NumericProperty(10)
 
     def __init__(self, **kwargs):
-        kwargs['do_rotation'] = False
-        kwargs['do_scale'] = False
-        kwargs['do_translation'] = False
         super(GoBoard, self).__init__(**kwargs)
+        self.touch = {}
+        self.game  = kwargs['game']
 
         self._boxwidth  = int( (self.width  - 2 * self.padding) / self.stones )
         self._boxheight = int( (self.height - 2 * self.padding) / self.stones )
+        self.stone_size = min( self._boxwidth, self._boxheight ) - 2
+
         top  = int( ( self.height - self.stones * self._boxheight ) / 2 )
         left = int( ( self.width  - self.stones * self._boxwidth  ) / 2 )
         bottom = self.height - self.stones * self._boxheight - top
@@ -50,7 +57,7 @@ class GoBoard(Scatter):
 
         self.board = [ [ None for i in range(self.stones) ] for j in range(self.stones) ]
         with self.canvas:
-            Rectangle(source=resource_find("board.png"), size=self.size)
+            Rectangle(source="board.png", size=self.size)
             Color(0,0,0)
             x_min = left + int( self._boxwidth / 2 )
             x_max = x_min + self._boxwidth * (self.stones - 1)
@@ -61,33 +68,71 @@ class GoBoard(Scatter):
             for y in range(y_min, y_max+1, self._boxheight):
                 Line( points=( x_min,y, x_max,y ) )
 
+    def _clip_to(self, a, low, high):
+        if a < low:
+            return low
+        if a > high:
+            return high
+        return a
+
+    def find_address(self, x, y):
+        i = self._clip_to( int(( x - self._px['left'] )   / self._boxwidth),   0, self.stones - 1 )
+        j = self._clip_to( int(( y - self._px['bottom'] ) / self._boxheight),  0, self.stones - 1 )
+        return (i,j)
+
+    def address2xy(self, i, j):
+        x = int( self._px['left']   + i * self._boxwidth  + ( self._boxwidth  - self.stone_size ) / 2 )
+        y = int( self._px['bottom'] + j * self._boxheight + ( self._boxheight - self.stone_size ) / 2 )
+        return (x,y)
+
     def on_touch_down(self,touch):
-        # Either pick up existing piece or create new
-        #   - do we need to process motion, or can we pass to the new piece?
-        return True
+        if self.collide_point(*touch.pos):
+#            super(GoBoard, self).on_touch_down(touch)# while testing transforsm
+#            if touch.is_double_tap:
+#                # TODO: "select" group (alpha=.5), determine if it is captured, and capture (or show a Bubble)
+#                pass
+
+            touch.grab(self)
+            tpos = self.to_local(*touch.pos)
+            (i, j) = self.find_address( *tpos )
+
+            if self.board[i][j]:
+                self.touch[touch.uid] = self.board[i][j]
+                self.board[i][j] = None
+            else:
+                self.touch[touch.uid] = GoStone(width=self.stone_size, height=self.stone_size, pos=touch.pos, color=self.game.player)
+                self.add_widget( self.touch[touch.uid] )
+
+            return True
 
     def on_touch_move(self,touch):
-        pass
+        if touch.grab_current is self and self.touch.get(touch.uid, None):
+#            super(GoBoard, self).on_touch_move(touch)# while testing transforsm
+            self.touch[touch.uid].pos = touch.pos
+            return True
 
     def on_touch_up(self,touch):
-        pass
+        if touch.grab_current is self and self.touch.get(touch.uid, None):
+#            super(GoBoard, self).on_touch_up(touch)# while testing transforsm
+            # TODO: look for adjacent capture groups and either select or highlight (alpha=.5) group
+            (i, j) = self.find_address(*self.to_local(*touch.pos))
+            self.board[i][j] = self.touch[touch.uid]
+            del self.touch[touch.uid]
+            ani = Animation( d=.1, t='in_out_sine', pos=self.to_parent(*self.address2xy(i,j)) )
+            ani.start( self.board[i][j] )
+            self.game.on_play(i, j)
+            return True
 
 
 class GoStone(Widget):
-    turn_number = NumericProperty(0)
-#    turn_number.bind( update_turn )
-
     color = StringProperty(None)
-#    color.bind( update_source )
+    turn_number = NumericProperty(0)
+    highlighted = BooleanProperty(False)
 
-    def update_source(self):
-        with self.canvas:
-            Rectangle(source=self.color + '.png', pos=self.pos, size=self.size)
-
-    # display turn number on top of stone
-    def update_turn(self):
-        if Config.getboolean( "ttgo", "show_turns" ):
-            self.annotate(turn_number)
+    def __init__(self, **kwargs):
+        super(GoStone, self).__init__(**kwargs)
+        self.image = Image(mipmap=True, pos=self.pos, size=self.size, source=self.color + '.png')
+        self.add_widget(self.image)
 
     def annotate(self, text):
         pass
@@ -99,7 +144,6 @@ class TTGoApp(App):
     icon = 'themes/default/black.png'
 
     def build(self):
-        # Just add another path for the theme
         kivy.resources.resource_add_path("/home/duelafn/Surface/tabletop-go/themes/" + self.config.get('ttgo', 'theme'))
         self.game = GoGame()
         return self.game

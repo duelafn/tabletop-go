@@ -55,7 +55,7 @@ class GoBoard(Scatter):
         self._padding = { 'top': top, 'right': right, 'bottom': bottom, 'left': left }
         self._px = px = { 'top': self.height-top, 'right': self.width-right, 'bottom': bottom, 'left': left }
 
-        self.board = [ [ None for i in range(self.stones) ] for j in range(self.stones) ]
+        self.board = [ [ None for i in xrange(self.stones) ] for j in xrange(self.stones) ]
         with self.canvas:
             Rectangle(source="board.png", size=self.size)
             Color(0,0,0)
@@ -63,9 +63,9 @@ class GoBoard(Scatter):
             x_max = x_min + self._boxwidth * (self.stones - 1)
             y_min = bottom + int( self._boxheight / 2 )
             y_max = y_min + self._boxheight * (self.stones - 1)
-            for x in range(x_min, x_max+1, self._boxwidth):
+            for x in xrange(x_min, x_max+1, self._boxwidth):
                 Line( points=( x,y_min, x,y_max ) )
-            for y in range(y_min, y_max+1, self._boxheight):
+            for y in xrange(y_min, y_max+1, self._boxheight):
                 Line( points=( x_min,y, x_max,y ) )
 
     def _clip_to(self, a, low, high):
@@ -144,7 +144,7 @@ class TTGoApp(App):
     icon = 'themes/default/black.png'
 
     def build(self):
-        kivy.resources.resource_add_path("/home/duelafn/Surface/tabletop-go/themes/" + self.config.get('ttgo', 'theme'))
+        kivy.resources.resource_add_path("themes/" + self.config.get('ttgo', 'theme'))
         self.game = GoGame()
         return self.game
 

@@ -17,9 +17,6 @@ from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.resources import resource_find
 from kivy.animation import Animation
 from kivy.uix.image import Image
-from kivy.lang import Builder
-
-Builder.load_file('ttgo.kv')
 
 class GoGame(Widget):
     def __init__(self, **kwargs):

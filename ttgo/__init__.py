@@ -17,7 +17,9 @@ from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.resources import resource_find
 from kivy.animation import Animation
 from kivy.uix.image import Image
+from kivy.lang import Builder
 
+Builder.load_file('ttgo.kv')
 
 class GoGame(Widget):
     def __init__(self, **kwargs):
@@ -38,6 +40,7 @@ class GoGame(Widget):
 class GoBoard(Scatter):
     stones  = NumericProperty(0)
     padding = NumericProperty(10)
+    turn    = NumericProperty(1)
 
     def __init__(self, **kwargs):
         super(GoBoard, self).__init__(**kwargs)
@@ -46,7 +49,7 @@ class GoBoard(Scatter):
 
         self._boxwidth  = int( (self.width  - 2 * self.padding) / self.stones )
         self._boxheight = int( (self.height - 2 * self.padding) / self.stones )
-        self.stone_size = min( self._boxwidth, self._boxheight ) - 2
+        self.stone_size = min( self._boxwidth, self._boxheight )
 
         top  = int( ( self.height - self.stones * self._boxheight ) / 2 )
         left = int( ( self.width  - self.stones * self._boxwidth  ) / 2 )
@@ -100,7 +103,10 @@ class GoBoard(Scatter):
                 self.touch[touch.uid] = self.board[i][j]
                 self.board[i][j] = None
             else:
-                self.touch[touch.uid] = GoStone(width=self.stone_size, height=self.stone_size, pos=touch.pos, color=self.game.player)
+                self.touch[touch.uid] = GoStone(width=self.stone_size, height=self.stone_size, color=self.game.player)
+                self.touch[touch.uid].center = tpos
+                self.touch[touch.uid].annotation = str(self.turn)
+                self.turn = self.turn + 1
                 self.add_widget( self.touch[touch.uid] )
 
             return True
@@ -108,7 +114,7 @@ class GoBoard(Scatter):
     def on_touch_move(self,touch):
         if touch.grab_current is self and self.touch.get(touch.uid, None):
 #            super(GoBoard, self).on_touch_move(touch)# while testing transforsm
-            self.touch[touch.uid].pos = touch.pos
+            self.touch[touch.uid].center = self.to_local(*touch.pos)
             return True
 
     def on_touch_up(self,touch):
@@ -118,7 +124,7 @@ class GoBoard(Scatter):
             (i, j) = self.find_address(*self.to_local(*touch.pos))
             self.board[i][j] = self.touch[touch.uid]
             del self.touch[touch.uid]
-            ani = Animation( d=.1, t='in_out_sine', pos=self.to_parent(*self.address2xy(i,j)) )
+            ani = Animation( d=.1, t='in_out_sine', pos=self.address2xy(i,j) )
             ani.start( self.board[i][j] )
             self.game.on_play(i, j)
             return True
@@ -126,17 +132,7 @@ class GoBoard(Scatter):
 
 class GoStone(Widget):
     color = StringProperty(None)
-    turn_number = NumericProperty(0)
-    highlighted = BooleanProperty(False)
-
-    def __init__(self, **kwargs):
-        super(GoStone, self).__init__(**kwargs)
-        self.image = Image(mipmap=True, pos=self.pos, size=self.size, source=self.color + '.png')
-        self.add_widget(self.image)
-
-    def annotate(self, text):
-        pass
-
+    annotation = StringProperty("")
 
 
 class TTGoApp(App):

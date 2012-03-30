@@ -18,3 +18,59 @@
         size: root.image.size
         text: root.annotation
         color: [0,0,0,1] if root.color == 'white' else [1,1,1,1]
+
+<NewGame>
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        size_hint: (.25, .5)
+
+        Button:
+            text: "19"
+            font_size: 16
+            on_press: root.app.start_game(self.text)
+
+        Button:
+            text: "17"
+            font_size: 16
+            on_press: root.app.start_game(self.text)
+
+        Button:
+            text: "13"
+            font_size: 16
+            on_press: root.app.start_game(self.text)
+
+        Button:
+            text: "9"
+            font_size: 16
+            on_press: root.app.start_game(self.text)
+
+        NumChooser:
+            app: root.app
+
+<NumChooser>
+    orientation: "horizontal"
+    size_hint: (1, 1)
+    spacing: 5
+
+    Button:
+        id: a_button
+        size_hint: (.75, 1)
+        text: "19"
+        font_size: 16
+        on_press: root.app.start_game(self.text)
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 5
+        size_hint: (.25, 1)
+
+        Button:
+            text: "+"
+            font_size: 16
+            on_press: a_button.text = str( int(a_button.text) + 1 )
+
+        Button:
+            text: "-"
+            font_size: 16
+            on_press: a_button.text = max( 2, str( int(a_button.text) - 1 ) )

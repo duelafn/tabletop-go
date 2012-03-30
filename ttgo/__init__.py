@@ -12,18 +12,36 @@ from kivy.uix.widget import Widget
 from kivy.uix.scatter import Scatter
 from kivy.logger import Logger
 from kivy.config import Config
-from kivy.properties import NumericProperty, StringProperty, BooleanProperty
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty, BooleanProperty
 from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.resources import resource_find
 from kivy.animation import Animation
 from kivy.uix.image import Image
+from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.factory import Factory
 
-class GoGame(Widget):
+
+class NumChooser(BoxLayout):
+    app = ObjectProperty(None)
+
+class GoStone(Widget):
+    color = StringProperty(None)
+    annotation = StringProperty("")
+
+class NewGame(AnchorLayout):
+    app = ObjectProperty(None)
+
+
+
+class GoGame(AnchorLayout):
+    app = ObjectProperty(None)
+
     def __init__(self, **kwargs):
         super(GoGame, self).__init__(**kwargs)
         self.player = 'black'
         s = min( Config.getint('graphics', 'width'), Config.getint('graphics', 'height') ) - 50
-        self.board = GoBoard( stones=19, pos=(25,25), size=(s,s), game=self )
+        self.board = GoBoard( stones=kwargs["stones"], size=(s,s), game=self )
         self.add_widget( self.board )
 
     def on_play(self,i,j):
@@ -126,20 +144,28 @@ class GoBoard(Scatter):
             self.game.on_play(i, j)
             return True
 
-
-class GoStone(Widget):
-    color = StringProperty(None)
-    annotation = StringProperty("")
-
-
 class TTGoApp(App):
     title = "TTGo"
     icon = 'themes/default/black.png'
 
     def build(self):
         kivy.resources.resource_add_path("themes/" + self.config.get('ttgo', 'theme'))
-        self.game = GoGame()
-        return self.game
+        self.screens = { "new":  NewGame(app=self) }
+        self.root = AnchorLayout()
+        self.goto_screen("new")
+        return self.root
+
+    def start_game(self, size):
+        try:
+            size = int(size)
+        except ValueError, e:
+            return
+        self.screens["game"] = GoGame(app=self, stones=size)
+        self.goto_screen("game")
+
+    def goto_screen(self, screen_name):
+        self.root.clear_widgets()
+        self.root.add_widget(self.screens[screen_name])
 
 
     def build_config(self, config):
@@ -170,6 +196,7 @@ class TTGoApp(App):
 """
         settings.add_json_panel('TTGo application', self.config, data=jsondata)
 
+Factory.register("NumChooser", NumChooser)
 
 if __name__ == '__main__':
     TTGoApp().run()

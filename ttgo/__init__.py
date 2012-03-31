@@ -13,6 +13,7 @@ import kivy
 
 from kivy.animation import Animation
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window, Keyboard
 from kivy.factory import Factory
@@ -35,6 +36,28 @@ Factory.register("NumChooser", NumChooser)
 class GoStone(Widget):
     color = StringProperty(None)
     annotation = StringProperty("")
+
+    def boom(self,cb=None,*args):
+        duration = .25
+        frames = 30
+
+        if hasattr(self, 'frame') and self.frame:
+            self.frame += 1
+            if self.frame <= frames:
+                self.smoke.source = "smoke/smoke_%02d.png" % self.frame
+                Clock.schedule_once(self.boom,duration/frames)
+            else:
+                self.frame = None
+                if self.cb: self.cb()
+        else:
+            self.frame = 1
+            self.smoke = Image(source="smoke/smoke_01.png",mipmap=True,size=[2*x for x in self.size],center=self.center)
+            Animation(size=(0,0),  pos=self.center, d=duration).start(self.image)
+            Animation(font_size=0, pos=self.center, d=duration).start(self.label)
+            self.add_widget(self.smoke)
+            self.cb = cb
+            Clock.schedule_once(self.boom,duration/frames)
+
 Factory.register("GoStone", GoStone)
 
 class NewGame(AnchorLayout):
@@ -140,13 +163,11 @@ class GoBoard(Widget):
             (i, j) = self.find_address( *tpos )
 
             if self.board[i][j]:
-                self.touch[touch.uid] = self.board[i][j]
-                self.board[i][j] = None
+                return
             else:
                 self.touch[touch.uid] = GoStone(width=self.stone_size, height=self.stone_size, color=self.game.current_player)
                 self.touch[touch.uid].center = tpos
                 self.touch[touch.uid].annotation = str(self.turn)
-                self.turn = self.turn + 1
                 self.add_widget( self.touch[touch.uid] )
 
             return True
@@ -159,11 +180,16 @@ class GoBoard(Widget):
     def on_touch_up(self,touch):
         if touch.grab_current is self and self.touch.get(touch.uid, None):
             (i, j) = self.find_address(*self.to_local(*touch.pos))
-            self.board[i][j] = self.touch[touch.uid]
+            stone = self.touch[touch.uid]
             del self.touch[touch.uid]
-            ani = Animation( d=.1, t='in_out_sine', center=self.address2xy(i,j) )
-            ani.start( self.board[i][j] )
-            self.game.on_play(i, j)
+            if self.board[i][j]:
+                stone.boom(cb=lambda: self.remove_widget(stone))
+            else:
+                self.board[i][j] = stone
+                self.turn += 1
+                self.game.on_play(i, j)
+                ani = Animation( d=.1, t='in_out_sine', center=self.address2xy(i,j) )
+                ani.start( stone )
             return True
 
 Factory.register("GoBoard", GoBoard)

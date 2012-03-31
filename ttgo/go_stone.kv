@@ -1,0 +1,20 @@
+#:kivy 1.0
+
+<GoStone>
+    image: piece_image
+    label: annotation
+
+    Image:
+        id: piece_image
+        mipmap: True
+        center: root.center
+        width: root.width - 2
+        height: root.height - 2
+        source: root.color + '.png'
+
+    Label:
+        id: annotation
+        center: root.center
+        size: root.image.size
+        text: root.annotation
+        color: [0,0,0,1] if root.color == 'white' else [1,1,1,1]

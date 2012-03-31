@@ -4,10 +4,11 @@
 """
 
 from __future__ import division, absolute_import, print_function
-__version__ = '0.0005'   # Created: 2012-03-25
+__version__ = '0.0006'   # Created: 2012-03-25
 
 import logging
 import re
+import glob
 import kivy
 
 from kivy.animation import Animation
@@ -16,6 +17,7 @@ from kivy.config import Config
 from kivy.core.window import Window, Keyboard
 from kivy.factory import Factory
 from kivy.graphics import Rectangle, Line, Color, Ellipse
+from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, BooleanProperty
 from kivy.resources import resource_find
@@ -39,12 +41,12 @@ class NewGame(AnchorLayout):
 
 
 class GoGame(AnchorLayout):
-    stones  = NumericProperty(0)
-    app = ObjectProperty(None)
+    stones  = NumericProperty(None)
+    player  = StringProperty("black")
+    app     = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(GoGame, self).__init__(**kwargs)
-        self.player = 'black'
         s = min( Config.getint('graphics', 'width'), Config.getint('graphics', 'height') ) - 50
         self.board = GoBoard( stones=self.stones, size=(s,s), game=self )
         self.add_widget( self.board )
@@ -56,8 +58,8 @@ class GoGame(AnchorLayout):
             self.player = 'black'
 
 
-# 9x9, 13x13, 17x17, or 19x19
 class GoBoard(Scatter):
+    game    = ObjectProperty(None)
     stones  = NumericProperty(0)
     padding = NumericProperty(10)
     turn    = NumericProperty(1)
@@ -65,7 +67,6 @@ class GoBoard(Scatter):
     def __init__(self, **kwargs):
         super(GoBoard, self).__init__(**kwargs)
         self.touch = {}
-        self.game  = kwargs['game']
 
         self._boxwidth  = int( (self.width  - 2 * self.padding) / self.stones )
         self._boxheight = int( (self.height - 2 * self.padding) / self.stones )
@@ -155,10 +156,10 @@ class TTGoApp(App):
 
     def build(self):
         kivy.resources.resource_add_path("themes/" + self.config.get('ttgo', 'theme'))
-        self.screens = { "new":  NewGame(app=self) }
-        self.root = AnchorLayout()
+        for kv in glob.glob('ttgo/*.kv'):
+            if kv != 'ttgo/ttgo.kv': Builder.load_file(kv, rulesonly=True)
+        self.screens = { "new": NewGame(app=self) }
         self.goto_screen("new")
-        return self.root
 
     def on_start(self):
         Window.bind(on_key_down=self.on_key_down)

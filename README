@@ -10,6 +10,20 @@ computers as long as you can install the kivy framework.
 
 
 
+TODO
+====
+
+* Stone placement restrictions
+* turn indicator
+* capturing
+* handicaps
+* undo, redo, checkpointing
+* Fullscreen toggle
+* Help/usage
+* options: theme (dynamic + custom path), show turns, komi
+* theme paths / installation / ...
+* Enforce rule of Ko
+
 
 
 License

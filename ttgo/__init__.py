@@ -4,22 +4,26 @@
 """
 
 from __future__ import division, absolute_import, print_function
+__version__ = '0.0005'   # Created: 2012-03-25
+
 import logging
 import re
 import kivy
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.uix.scatter import Scatter
-from kivy.logger import Logger
-from kivy.config import Config
-from kivy.properties import ObjectProperty, NumericProperty, StringProperty, BooleanProperty
-from kivy.graphics import Rectangle, Line, Color, Ellipse
-from kivy.resources import resource_find
+
 from kivy.animation import Animation
-from kivy.uix.image import Image
+from kivy.app import App
+from kivy.config import Config
+from kivy.core.window import Window, Keyboard
+from kivy.factory import Factory
+from kivy.graphics import Rectangle, Line, Color, Ellipse
+from kivy.logger import Logger
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty, BooleanProperty
+from kivy.resources import resource_find
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.factory import Factory
+from kivy.uix.image import Image
+from kivy.uix.scatter import Scatter
+from kivy.uix.widget import Widget
 
 
 class NumChooser(BoxLayout):
@@ -35,13 +39,14 @@ class NewGame(AnchorLayout):
 
 
 class GoGame(AnchorLayout):
+    stones  = NumericProperty(0)
     app = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(GoGame, self).__init__(**kwargs)
         self.player = 'black'
         s = min( Config.getint('graphics', 'width'), Config.getint('graphics', 'height') ) - 50
-        self.board = GoBoard( stones=kwargs["stones"], size=(s,s), game=self )
+        self.board = GoBoard( stones=self.stones, size=(s,s), game=self )
         self.add_widget( self.board )
 
     def on_play(self,i,j):
@@ -155,6 +160,21 @@ class TTGoApp(App):
         self.goto_screen("new")
         return self.root
 
+    def on_start(self):
+        Window.bind(on_key_down=self.on_key_down)
+
+    def on_key_down(self, win, key, scancode, string, modifiers):
+        if key == 292:
+            win.toggle_fullscreen()
+            win.update_viewport()
+            return True
+        elif key == 27:
+            if self.screen == "new":
+                exit()
+            else:
+                self.goto_screen("new")
+            return True
+
     def start_game(self, size):
         try:
             size = int(size)
@@ -165,6 +185,7 @@ class TTGoApp(App):
 
     def goto_screen(self, screen_name):
         self.root.clear_widgets()
+        self.screen = screen_name
         self.root.add_widget(self.screens[screen_name])
 
 

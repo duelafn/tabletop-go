@@ -1,0 +1,17 @@
+#:kivy 1.0
+
+<GoGame>
+    orientation: 'horizontal'
+    padding: 25
+    size_hint: (1, 1)
+    board: go_board
+
+    GoBoard:
+        id: go_board
+        points: root.points
+        game: root
+        size_hint: (.56, 1)
+
+    Button:
+        size_hint: (.44, 1)
+        text: "Hello"

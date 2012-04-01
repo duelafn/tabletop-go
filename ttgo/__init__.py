@@ -51,9 +51,10 @@ class GoStone(Widget):
                 if self.cb: self.cb()
         else:
             self.frame = 1
-            self.smoke = Image(source="smoke/smoke_01.png",mipmap=True,size=[2*x for x in self.size],center=self.center)
-            Animation(size=(0,0),  pos=self.center, d=duration).start(self.image)
-            Animation(font_size=0, pos=self.center, d=duration).start(self.label)
+            self.smoke = Image(source="smoke/smoke_01.png",mipmap=True,size=[2*x for x in self.size])
+            self.smoke.center = self.center
+            Animation(size=(0,0),  center=self.center, d=duration).start(self.image)
+            Animation(font_size=0, center=self.center, d=duration).start(self.label)
             self.add_widget(self.smoke)
             self.cb = cb
             Clock.schedule_once(self.boom,duration/frames)

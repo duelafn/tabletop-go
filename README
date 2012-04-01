@@ -17,12 +17,15 @@ TODO
 * capturing
 * handicaps
 * undo, redo, checkpointing
+* consider integerization problem
 * Fullscreen toggle
 * Help/usage
-* options: theme (dynamic + custom path), show turns, auto-capture, komi
+* options: theme (dynamic + custom path), show turns, auto-capture
 * theme paths / installation / ...
-* Enforce rule of Ko
+* Enforce rule of Ko (optional)
+* Atari warning (optional)
 * Quiet operation (no kivy debugging)
+* scoring? / komi?
 
 
 

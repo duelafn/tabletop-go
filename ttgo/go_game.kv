@@ -3,9 +3,11 @@
 <GoGame>
     orientation: 'horizontal'
     padding: 25
+    spacing: 10
     size_hint: (1, 1)
     board: go_board
 
+    # size_hint is assuming a 16:9 layout
     GoBoard:
         id: go_board
         points: root.points

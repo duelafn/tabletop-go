@@ -4,7 +4,7 @@
 """
 
 from __future__ import division, absolute_import, print_function
-__version__ = '0.0006'   # Created: 2012-03-25
+__version__ = '0.0007'   # Created: 2012-03-25
 
 import logging
 import re
@@ -165,8 +165,8 @@ class GoBoard(Widget):
             if self.board[i][j]:
                 return
             else:
-                self.touch[touch.uid] = GoStone(width=self.stone_size, height=self.stone_size, color=self.game.current_player)
-                self.touch[touch.uid].center = tpos
+                self.touch[touch.uid] = GoStone(size=(self.stone_size,self.stone_size), color=self.game.current_player)
+                self.touch[touch.uid].center = self.address2xy(i,j)
                 self.touch[touch.uid].annotation = str(self.turn)
                 self.add_widget( self.touch[touch.uid] )
 

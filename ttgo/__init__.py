@@ -53,8 +53,8 @@ class GoStone(Widget):
             self.frame = 1
             self.smoke = Image(source="smoke/smoke_01.png",mipmap=True,size=[2*x for x in self.size])
             self.smoke.center = self.center
-            Animation(size=(0,0),  center=self.center, d=duration).start(self.image)
-            Animation(font_size=0, center=self.center, d=duration).start(self.label)
+            Animation(size=(0,0), center=self.center, d=duration).start(self)
+            Animation(color=[0,0,0,0], d=duration).start(self.label)# also clear out 1px label remnant
             self.add_widget(self.smoke)
             self.cb = cb
             Clock.schedule_once(self.boom,duration/frames)
@@ -89,7 +89,6 @@ class GoBoard(Widget):
     board_pad  = NumericProperty(10)
     points     = NumericProperty(None)
     box_size   = NumericProperty(None)
-    stone_size = NumericProperty(None)
 
     def __init__(self, **kwargs):
         super(GoBoard, self).__init__(**kwargs)
@@ -118,13 +117,12 @@ class GoBoard(Widget):
         # Calculations
         self.grid_pos   = (self.image.pos[0] + self.board_pad, self.image.pos[1] + self.board_pad)
         self.box_size   = int( ( s - 2 * self.board_pad ) / self.points )
-        self.stone_size = self.box_size - 2
 
         # Stone images
         for i in xrange(self.points):
             for j in xrange(self.points):
                 if self.board[i][j]:
-                    self.board[i][j].size   = (self.stone_size, self.stone_size)
+                    self.board[i][j].size   = (self.box_size, self.box_size)
                     self.board[i][j].center = self.address2xy(i, j)
 
         # Lines
@@ -166,7 +164,7 @@ class GoBoard(Widget):
             if self.board[i][j]:
                 return
             else:
-                self.touch[touch.uid] = GoStone(size=(self.stone_size,self.stone_size), color=self.game.current_player)
+                self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), color=self.game.current_player)
                 self.touch[touch.uid].center = self.address2xy(i,j)
                 self.touch[touch.uid].annotation = str(self.turn)
                 self.add_widget( self.touch[touch.uid] )

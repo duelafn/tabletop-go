@@ -34,7 +34,7 @@ class NumChooser(BoxLayout):
 Factory.register("NumChooser", NumChooser)
 
 class GoStone(Widget):
-    color = StringProperty(None)
+    stone_color = StringProperty(None)
     annotation = StringProperty("")
 
     def boom(self,cb=None,*args):
@@ -51,7 +51,7 @@ class GoStone(Widget):
                 if self.cb: self.cb()
         else:
             self.frame = 1
-            self.smoke = Image(source="smoke/smoke_01.png",mipmap=True,size=[2*x for x in self.size])
+            self.smoke = Image(source="smoke/smoke_01.png",size=[2*x for x in self.size])# mipmap=True,
             self.smoke.center = self.center
             Animation(size=(0,0), center=self.center, d=duration).start(self)
             Animation(color=[0,0,0,0], d=duration).start(self.label)# also clear out 1px label remnant
@@ -164,7 +164,7 @@ class GoBoard(Widget):
             if self.board[i][j]:
                 return
             else:
-                self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), color=self.game.current_player)
+                self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), stone_color=self.game.current_player)
                 self.touch[touch.uid].center = self.address2xy(i,j)
                 self.touch[touch.uid].annotation = str(self.turn)
                 self.add_widget( self.touch[touch.uid] )

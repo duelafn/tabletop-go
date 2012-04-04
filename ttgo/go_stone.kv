@@ -6,15 +6,15 @@
 
     Image:
         id: piece_image
-        mipmap: True
+#        mipmap: True
         center: root.center
         width:  root.width
         height: root.height
-        source: root.color + '.png'
+        source: root.stone_color + '.png'
 
     Label:
         id: annotation
         center: root.center
         font_size: root.height / 4
         text: root.annotation
-        color: [0,0,0,1] if root.color == 'white' else [1,1,1,1]
+        color: [0,0,0,1] if root.stone_color == 'white' else [1,1,1,1]

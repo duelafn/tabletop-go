@@ -48,11 +48,23 @@
         size_hint: (.25, 1)
 
         Button:
-            text: "+"
-            font_size: 16
+            id: up_btn
             on_press: a_button.text = str( int(a_button.text) + 1 )
 
+            Image:
+                source: "up.png"
+                width:  up_btn.width / 2
+                height: up_btn.height / 2
+                center_x: up_btn.center_x - 0 * self.width
+                center_y: up_btn.center_y - 0 * self.height
+
         Button:
-            text: "-"
-            font_size: 16
+            id: down_btn
             on_press: a_button.text = str(max( 2, int(a_button.text) - 1 ))
+
+            Image:
+                source: "down.png"
+                width:  down_btn.width / 2
+                height: down_btn.height / 2
+                center_x: down_btn.center_x - 0 * self.width
+                center_y: down_btn.center_y - 0 * self.height

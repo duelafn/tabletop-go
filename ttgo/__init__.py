@@ -4,7 +4,7 @@
 """
 
 from __future__ import division, absolute_import, print_function
-__version__ = '0.0007'   # Created: 2012-03-25
+__version__ = '0.0010'   # Created: 2012-03-25
 
 import logging
 import re
@@ -32,6 +32,19 @@ from kivy.uix.widget import Widget
 class NumChooser(BoxLayout):
     app = ObjectProperty(None)
 Factory.register("NumChooser", NumChooser)
+
+class PlayerPad(Scatter):
+    label = ObjectProperty(None)
+    player = StringProperty("")
+
+    def activate(self):
+        self.label.bold = True
+        self.label.color = [1,1,.25,1]
+    def deactivate(self):
+        self.label.bold = False
+        self.label.color = [1,1,1,1]
+
+Factory.register("PlayerPad", PlayerPad)
 
 class GoStone(Widget):
     stone_color = StringProperty(None)
@@ -71,13 +84,22 @@ class GoGame(BoxLayout):
     app = ObjectProperty(None)
     board = ObjectProperty(None)
     points = NumericProperty(None)
+    pads = ObjectProperty(None)
     current_player = OptionProperty("black", options=["black","white"])
+
+    def __init__(self, **kwargs):
+        super(GoGame, self).__init__(**kwargs)
+        self.pads[0].activate()
 
     def on_play(self,i,j):
         if self.current_player == 'black':
             self.current_player = 'white'
+            self.pads[0].deactivate()
+            self.pads[1].activate()
         else:
             self.current_player = 'black'
+            self.pads[0].activate()
+            self.pads[1].deactivate()
 
 Factory.register("GoGame", GoGame)
 
@@ -199,6 +221,7 @@ class TTGoApp(App):
     icon = 'themes/default/black.png'
 
     def build(self):
+        kivy.resources.resource_add_path("glyphicons")
         kivy.resources.resource_add_path("themes/" + self.config.get('ttgo', 'theme'))
         for kv in glob.glob('ttgo/*.kv'):
             if kv != 'ttgo/ttgo.kv': Builder.load_file(kv, rulesonly=True)

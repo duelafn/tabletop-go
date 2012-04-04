@@ -1,0 +1,36 @@
+#:kivy 1.0
+
+<PlayerPad>
+    do_scale: False
+    do_rotation: False
+    do_translation: False
+    auto_bring_to_front: False
+    label: my_label
+
+    BoxLayout:
+        orientation: 'horizontal'
+        width:  root.width
+        height: root.height
+
+        Label:
+            id: my_label
+            size_hint: (.85,1)
+            text: root.player
+
+        BoxLayout:
+            size_hint: (.15,1)
+            orientation: "vertical"
+
+            Button:
+                size_hint: (1,.25)
+                on_press: root.rotation = (180 + root.rotation) % 360
+
+                Image:
+                    source: "rotate.png"
+                    width:  self.parent.width / 2
+                    height: self.parent.height / 2
+                    center_x: self.parent.center_x - 0 * self.width
+                    center_y: self.parent.center_y - 0 * self.height
+
+            FloatLayout:
+                size_hint: (1,.75)

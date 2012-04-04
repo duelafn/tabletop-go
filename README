@@ -13,7 +13,6 @@ computers as long as you can install the kivy framework.
 TODO
 ====
 
-* turn indicator
 * capturing
 * handicaps
 * undo, redo, checkpointing
@@ -42,4 +41,12 @@ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 more details.
 
 You should have received a copy of the GNU General Public License along
-with this program. If not, see <http://www.gnu.org/licenses/>.
+with this program. If not, see http://www.gnu.org/licenses/.
+
+
+
+Glyphicons Copyright Jan Kovařík (http://glyphicons.com/) and released
+under Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+
+You should have received a copy of the Creative Commons Attribution 3.0
+License along with this program. If not, see http://creativecommons.org/licenses/by/3.0/.

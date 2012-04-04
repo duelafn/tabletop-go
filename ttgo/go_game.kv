@@ -6,6 +6,7 @@
     spacing: 10
     size_hint: (1, 1)
     board: go_board
+    pads: [ p1_pad, p2_pad ]
 
     # size_hint is assuming a 16:9 layout
     GoBoard:
@@ -14,6 +15,19 @@
         game: root
         size_hint: (.56, 1)
 
-    Button:
+    BoxLayout:
+        orientation: "vertical"
         size_hint: (.44, 1)
-        text: "Hello"
+
+        PlayerPad:
+            id: p1_pad
+            size_hint: (1, .5)
+            pos_hint:  {'x':0, 'y':.5}
+            player: "Black"
+            rotation: 180
+
+        PlayerPad:
+            id: p2_pad
+            size_hint: (1, .5)
+            pos_hint:  {'x':0, 'y':0}
+            player: "White"

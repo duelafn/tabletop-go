@@ -3,6 +3,16 @@
 <GoStone>
     image: piece_image
     label: annotation
+    shadow: shadow_image
+
+    Image:
+        id: shadow_image
+#        mipmap: True
+        center: root.center
+        width:  root.width  + 4
+        height: root.height + 4
+        source: 'stone_highlight.png'
+        color:  [1,0,0,0]
 
     Image:
         id: piece_image

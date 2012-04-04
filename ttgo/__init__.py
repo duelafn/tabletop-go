@@ -49,6 +49,35 @@ Factory.register("PlayerPad", PlayerPad)
 class GoStone(Widget):
     stone_color = StringProperty(None)
     annotation = StringProperty("")
+    default_anim_duration = .25
+
+    def _alpha(self,alpha,duration=default_anim_duration,shadow=0):
+        Animation(color=[1,1,1,alpha]).start(self.image)
+        Animation(color=self.label.color[0:3]+[alpha]).start(self.label)
+        Animation(color=[1,0,0,shadow]).start(self.shadow)
+
+    def normal(self,duration=default_anim_duration):
+        self._alpha(1, duration)
+
+    def dim(self,duration=default_anim_duration,alpha=.4):
+        self._alpha(alpha, duration)
+
+    def highlight(self,duration=default_anim_duration):
+        self._alpha(1, duration, shadow=1)
+
+    def blink(self,c=2):
+        duration = .75
+        count = [c]
+
+        def run_anim(dt):
+            if count[0] > 0:
+                count[0] -= 1
+                Clock.schedule_once(lambda dt: self._alpha(0,duration/2))
+                Clock.schedule_once(lambda dt: self._alpha(1,duration/2), duration/2)
+                Clock.schedule_once(run_anim, duration)
+
+        Clock.schedule_once(run_anim)
+
 
     def boom(self,cb=None,*args):
         duration = .25

@@ -14,15 +14,15 @@ TODO
 ====
 
 * capturing
+* theme paths / installation / ...
 * handicaps
+* options: theme (dynamic + custom path), show turns, auto-capture
 * undo, redo, checkpointing
 * consider integerization problem
-* Fullscreen toggle
-* Help/usage
-* options: theme (dynamic + custom path), show turns, auto-capture
-* theme paths / installation / ...
-* Enforce rule of Ko (optional)
+* Rule enforcement (optional?): Ko, self-capture, ...
 * Atari warning (optional)
+* Help/usage
+* Fullscreen toggle without modesetting
 * Quiet operation (no kivy debugging)
 * scoring? / komi?
 

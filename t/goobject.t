@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import unittest
+import unittest2
 import sys
 sys.path.append("")
 
@@ -25,14 +25,15 @@ boards = {
 
 
 
-class BasicAccess(unittest.TestCase):
+class BasicAccess(unittest2.TestCase):
     def runTest(self):
         go = GoObject()
         go.board = boards["white_only"].copy()
 
         self.assertEqual( len(go), 14, "len" )
-        self.assertEqual( go[2,3], w,     "Getter" )
-        self.assertEqual( go[0,0], None,  "Getter for non-existant" )
+
+        self.assertEqual( go[2,3], w,  "Getter" )
+        self.assertIsNone( go[0,0],  "Getter for non-existant" )
         self.assertRaises( IndexError, lambda x: go[19,19], "getter: IndexError when out of bounds" )
 
         go[0,0] = w
@@ -42,14 +43,14 @@ class BasicAccess(unittest.TestCase):
         self.assertRaises( IndexError, python_lambdas_suck_1, "setter: IndexError when out of bounds" )
 
         del go[2,3]
-        self.assertEqual( go[2,3], None,  "del" )
+        self.assertIsNone( go[2,3],  "del" )
         def python_lambdas_suck_2(x):
             del go[19,19]
         self.assertRaises( IndexError, python_lambdas_suck_2, "del: IndexError when out of bounds" )
 
-        self.assertTrue(  (3,4)   in go,     "__contains__" )
-        self.assertFalse( (3,1)   in go,     "not __contains__" )
-        self.assertFalse( (19,19) in go,     "__contains__ out of bounds" )
+        self.assertIn(    (3,4),   go, "__contains__" )
+        self.assertNotIn( (3,1),   go, "not __contains__" )
+        self.assertNotIn( (19,19), go, "__contains__ out of bounds" )
 
         self.assertEqual( go.get(3,4, 42), w, "get() existing" )
         self.assertEqual( go.get(9,9, 42), 42, "get() non-existing" )
@@ -57,7 +58,7 @@ class BasicAccess(unittest.TestCase):
 
 
 
-class TestGrouping(unittest.TestCase):
+class TestGrouping(unittest2.TestCase):
     """
 python -mtimeit \
 -s 'from goobject import GoObject' \
@@ -72,15 +73,15 @@ python -mtimeit \
     def runTest(self):
         go = GoObject()
         go.board = boards["white_only"].copy()
-        the_group = sorted(boards["white_only"].keys())
+        the_group = boards["white_only"].keys()
 
-        self.assertEqual(sorted(go.get_group(2,3)), the_group, 'big group from loc 1')
-        self.assertEqual(sorted(go.get_group(1,0)), the_group, 'big group from loc 2')
-        self.assertEqual(sorted(go.get_group(0,0)), [],        'empty location w/neighbor')
-        self.assertEqual(sorted(go.get_group(9,9)), [],        'empty location no neighbors')
+        self.assertItemsEqual(go.get_group(2,3), the_group, 'big group from loc 1')
+        self.assertItemsEqual(go.get_group(1,0), the_group, 'big group from loc 2')
+        self.assertItemsEqual(go.get_group(0,0), [],        'empty location w/neighbor')
+        self.assertItemsEqual(go.get_group(9,9), [],        'empty location no neighbors')
 
 
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

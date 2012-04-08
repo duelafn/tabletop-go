@@ -13,6 +13,7 @@ from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.properties import ObjectProperty, NumericProperty
 from kivy.uix.widget import Widget
 
+from go.goobject import GoObject
 from ttgo.gostone import GoStone
 
 
@@ -27,18 +28,19 @@ class GoBoard(Widget):
     def __init__(self, **kwargs):
         super(GoBoard, self).__init__(**kwargs)
         self.touch  = {}
+        self.board  = GoObject(points=self.points)
         self.stones = []
         self.bind(points=self.build)
         self.bind(size=self.rescale, board_pad=self.rescale)
 
     def build(self, obj, n):
+        self.board.points = self.points
         self.canvas.clear()
         with self.canvas:
             self.image  = Rectangle( source="board.png", size=(100,100) )
             Color(0,0,0)
             self.hlines = [ Line(points=(0,0,1,1)) for i in xrange(self.points) ]
             self.vlines = [ Line(points=(0,0,1,1)) for i in xrange(self.points) ]
-        self.board = [ [ None for i in xrange(self.points) ] for j in xrange(self.points) ]
         self.rescale(self, self.size)
 
     def rescale(self, obj, size):
@@ -55,9 +57,10 @@ class GoBoard(Widget):
         # Stone images
         for i in xrange(self.points):
             for j in xrange(self.points):
-                if self.board[i][j]:
-                    self.board[i][j].size   = (self.box_size, self.box_size)
-                    self.board[i][j].center = self.address2xy(i, j)
+                stone = self.board[i,j]
+                if stone:
+                    stone.size   = (self.box_size, self.box_size)
+                    stone.center = self.address2xy(i, j)
 
         # Lines
         (x_min,y_min) = self.address2xy(0,0)
@@ -95,7 +98,7 @@ class GoBoard(Widget):
             tpos = self.to_local(*touch.pos)
             (i, j) = self.find_address( *tpos )
 
-            if self.board[i][j]:
+            if self.board[i,j]:
                 return
             else:
                 self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), stone_color=self.game.current_player)
@@ -115,10 +118,10 @@ class GoBoard(Widget):
             (i, j) = self.find_address(*self.to_local(*touch.pos))
             stone = self.touch[touch.uid]
             del self.touch[touch.uid]
-            if self.board[i][j]:
+            if self.board[i,j]:
                 stone.boom(cb=lambda: self.remove_widget(stone))
             else:
-                self.board[i][j] = stone
+                self.board[i,j] = stone
                 self.turn += 1
                 self.game.on_play(i, j)
                 ani = Animation( d=.1, t='in_out_sine', center=self.address2xy(i,j) )

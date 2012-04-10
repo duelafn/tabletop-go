@@ -52,7 +52,8 @@ class GoStone(Widget):
         duration = .25
         frames = 30
 
-        if hasattr(self, 'frame') and self.frame:
+        # Note: we do not use self.frame = 0
+        if getattr(self, "frame", None):
             self.frame += 1
             if self.frame <= frames:
                 self.smoke.source = "smoke/smoke_%02d.png" % self.frame

@@ -26,7 +26,7 @@ class GoObject(object):
         raises IndexError unless 0 ≤ i,j < self.points
         """
         (i,j) = key
-        if i < 0 or i >= self.points or j < 0 or j >= self.points:
+        if not (0 <= i < self.points and 0 <= j < self.points):
             raise IndexError("(%d,%d) Out of bounds" % key)
         return self.board.get((i,j), None)
 

@@ -149,6 +149,37 @@ class TestLiberties(unittest2.TestCase):
 
 
 
+class TestAdjacent(unittest2.TestCase):
+
+    def test_adjacent_indices(self):
+        go = GoObject()
+        go.board = boards["T1"].copy()
+
+        self.assertItemsEqual(go.adjacent_indices(0,0),   [(0,1),(1,0)], 'adjacent_indices: corner 1')
+        self.assertItemsEqual(go.adjacent_indices(18,18), [(18,17),(17,18)], 'adjacent_indices: corner 2')
+        self.assertItemsEqual(go.adjacent_indices(0,2),   [(0,3),(1,2),(0,1)], 'adjacent_indices: side')
+        self.assertItemsEqual(go.adjacent_indices(5,6),   [(4,6),(6,6),(5,5),(5,7)], 'adjacent_indices: middle')
+
+    def test_adjacent_stones(self):
+        go = GoObject()
+        go.board = boards["T1"].copy()
+
+        self.assertItemsEqual(go.adjacent_stones(5,5),   [], 'adjacent_stones: nowhere')
+        self.assertItemsEqual(go.adjacent_stones(18,18), [], 'adjacent_stones: empty corner')
+        self.assertItemsEqual(go.adjacent_stones(0,1),   [(0,2),(1,1)], 'adjacent_stones: side')
+        self.assertItemsEqual(go.adjacent_stones(2,3),   [(2,2),(1,3)], 'adjacent_stones: middle')
+
+    def test_adjacent_points(self):
+        go = GoObject()
+        go.board = boards["T1"].copy()
+
+        self.assertItemsEqual(go.adjacent_points(5,5),   [(4,5),(6,5),(5,4),(5,6)], 'adjacent_points: nowhere')
+        self.assertItemsEqual(go.adjacent_points(18,18), [(18,17),(17,18)], 'adjacent_points: empty corner')
+        self.assertItemsEqual(go.adjacent_points(0,1),   [(0,0)], 'adjacent_points: side')
+        self.assertItemsEqual(go.adjacent_points(2,3),   [(3,3),(2,4)], 'adjacent_points: middle')
+
+
+
 
 if __name__ == '__main__':
     unittest2.main()

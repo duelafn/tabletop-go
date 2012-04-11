@@ -67,6 +67,49 @@ class GoObject(object):
         """go.get(i,j, dflt=None) → get index, allowing override of default"""
         return self.board.get((i,j), dflt)
 
+
+    def adjacent_indices(self, i, j):
+        """Set of valid adjacent indices
+
+        returns set([ (i-1,j), (i+1,j), (i,j-1), (i,j+1) ]) but excludes
+        invalid (off the board) indices.
+        """
+        if not (0 <= i < self.points and 0 <= j < self.points):
+            raise IndexError("(%d,%d) Out of bounds" % (i,j))
+
+        ind = set();
+        if i > 0:                ind.add((i-1,j))
+        if j > 0:                ind.add((i,j-1))
+        if i < self.points - 1:  ind.add((i+1,j))
+        if j < self.points - 1:  ind.add((i,j+1))
+        return ind
+
+
+    def adjacent_stones(self, i, j, color=None):
+        """Set of adjacent indices containing stones.
+
+        Keyword Args:
+
+        * color=None - if set, only indices containing stones of the given
+          color will be returned.
+        """
+        ind = set()
+        for pt in [ (i-1,j), (i+1,j), (i,j-1), (i,j+1) ]:
+            stone = self.get(*pt)
+            if stone and ( not(color) or color == stone.stone_color ):
+                ind.add(pt)
+        return ind
+
+
+    def adjacent_points(self, i, j):
+        """Set of adjacent indices without stones."""
+        ind = set()
+        for pt in self.adjacent_indices(i,j):
+            if not(self[pt]):
+                ind.add(pt)
+        return ind
+
+
     def get_group(self, i, j):
         """go.get_group(i,j) → set of indices
 

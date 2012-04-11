@@ -123,7 +123,7 @@ class GoBoard(Widget):
             else:
                 self.board[i,j] = stone
                 self.turn += 1
-                self.game.on_play(i, j)
+                self.game.on_play(i, j, self.board)
                 ani = Animation( d=.1, t='in_out_sine', center=self.address2xy(i,j) )
                 ani.start( stone )
             return True

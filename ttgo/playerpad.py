@@ -8,7 +8,7 @@ from __future__ import division, absolute_import, print_function
 import kivy
 
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty, BooleanProperty
 from kivy.uix.button import Button
 from kivy.uix.scatter import Scatter
 
@@ -19,6 +19,7 @@ class PlayerPad(Scatter):
     label = ObjectProperty(None)
     player = StringProperty("")
     captures = NumericProperty(0)
+    atari = BooleanProperty(False)
 
     def activate(self):
         self.label.bold = True

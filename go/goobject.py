@@ -124,6 +124,7 @@ class GoObject(object):
         self.grow_group(group)
         return group
 
+
     def grow_group(self, group):
         """go.grow_group(group)
 
@@ -145,13 +146,11 @@ class GoObject(object):
             for pt in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
                 if not(pt in seen):
                     seen.add(pt)
-                    try:
-                        stone = self[pt]
-                        if stone and stone.stone_color == color:
-                            group.add(pt)
-                            untested.add(pt)
-                    except IndexError, err:
-                        pass
+                    stone = self.get(*pt)
+                    if stone and stone.stone_color == color:
+                        group.add(pt)
+                        untested.add(pt)
+
 
     def group_liberties(self, group):
         """go.group_liberties(group) → set of empty points adjacent to the group
@@ -161,13 +160,8 @@ class GoObject(object):
         if any of the group indices do not have stones.
         """
         libs = set()
-
         for (i,j) in group:
-            for pt in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
-                try:
-                    if not(self[pt]):
-                        libs.add(pt)
-                except IndexError, err:
-                    pass
-
+            for pt in self.adjacent_indices(i,j):
+                if not(self[pt]):
+                    libs.add(pt)
         return libs

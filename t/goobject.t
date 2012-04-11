@@ -29,7 +29,7 @@ boards = {
 
 
 class BasicAccess(unittest2.TestCase):
-    def runTest(self):
+    def test_sequence_funcs(self):
         go = GoObject()
         go.board = boards["white_only"].copy()
 
@@ -73,7 +73,7 @@ python -mtimeit \
 'go.get_group(2,3)'
    """
 
-    def runTest(self):
+    def test_get_group(self):
         go = GoObject()
         go.board = boards["white_only"].copy()
         the_group = boards["white_only"].keys()
@@ -93,9 +93,7 @@ python -mtimeit \
         self.assertItemsEqual(go.get_group(0,2), [(0,2),(1,2),(2,2),(1,3)], 'get_group: inverted T')
 
 
-class TestGrouping2(unittest2.TestCase):
-
-    def runTest(self):
+    def test_grow_group(self):
         go = GoObject()
         go.board = boards["white_only"].copy()
         the_group = boards["white_only"].keys()
@@ -135,7 +133,7 @@ class TestGrouping2(unittest2.TestCase):
 
 class TestLiberties(unittest2.TestCase):
 
-    def runTest(self):
+    def test_group_liberties(self):
         go = GoObject()
 
         go.board = boards["ll1"].copy()

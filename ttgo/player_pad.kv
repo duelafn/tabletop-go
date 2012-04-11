@@ -8,29 +8,43 @@
     label: my_label
 
     BoxLayout:
-        orientation: 'horizontal'
-        width:  root.width
+        orientation: "vertical"
+        width: root.width
         height: root.height
 
-        Label:
-            id: my_label
-            size_hint: (.85,1)
-            text: root.player
-
         BoxLayout:
-            size_hint: (.15,1)
-            orientation: "vertical"
+            orientation: 'horizontal'
+            size_hint: (1,.25)
+            padding: 10
 
-            Button:
-                size_hint: (1,.25)
-                on_press: root.rotation = (180 + root.rotation) % 360
+            AnchorLayout:
+                size_hint: (.85,1)
+                NameBanner:
+                    id: my_label
+                    text: root.player
 
-                Image:
-                    source: "rotate.png"
-                    width:  self.parent.width / 2
-                    height: self.parent.height / 2
-                    center_x: self.parent.center_x - 0 * self.width
-                    center_y: self.parent.center_y - 0 * self.height
+            BoxLayout:
+                size_hint: (.15,1)
+                orientation: "vertical"
 
-            FloatLayout:
-                size_hint: (1,.75)
+                Button:
+                    size_hint: (1,.25)
+                    on_release: root.rotation = (180 + root.rotation) % 360
+
+                    Image:
+                        source: "rotate.png"
+                        width:  self.parent.width / 2
+                        height: self.parent.height / 2
+                        center_x: self.parent.center_x - 0 * self.width
+                        center_y: self.parent.center_y - 0 * self.height
+
+        GridLayout:
+            size_hint: (1,.75)
+            cols: 2
+
+            Label:
+                text: "Captures"
+                font_size: 16
+            Label:
+                text: str(root.captures)
+                font_size: 16

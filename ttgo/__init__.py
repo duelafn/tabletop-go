@@ -4,7 +4,7 @@
 """
 
 from __future__ import division, absolute_import, print_function
-__version__ = '0.0014'   # Created: 2012-03-25
+__version__ = '0.0016'   # Created: 2012-03-25
 
 import glob
 import kivy

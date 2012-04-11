@@ -8,13 +8,17 @@ from __future__ import division, absolute_import, print_function
 import kivy
 
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty
+from kivy.uix.button import Button
 from kivy.uix.scatter import Scatter
+
+from ttlib.click import DblTap
 
 
 class PlayerPad(Scatter):
     label = ObjectProperty(None)
     player = StringProperty("")
+    captures = NumericProperty(0)
 
     def activate(self):
         self.label.bold = True
@@ -22,4 +26,12 @@ class PlayerPad(Scatter):
     def deactivate(self):
         self.label.bold = False
         self.label.color = [1,1,1,1]
+
 Factory.register("PlayerPad", PlayerPad)
+
+class NameBanner(DblTap,Button):
+
+    def on_dbl_click(self):
+        # pop out keyboard and allow changing name
+        pass
+Factory.register("NameBanner", NameBanner)

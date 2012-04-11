@@ -10,6 +10,15 @@ computers as long as you can install the kivy framework.
 
 
 
+Status
+======
+
+The game is currently playable. Interface should be functional if not
+always friendly. Some oddities can come up if captured stones are not
+immediately removed from the board (this will be fixed in a later release).
+
+
+
 TODO
 ====
 
@@ -17,6 +26,7 @@ TODO
 * handicaps
 * options: theme (dynamic + custom path), show turns, auto-capture
 * undo, redo, checkpointing
+* force dead stone clearing
 * consider integerization problem
 * Rule enforcement (optional?): Ko, self-capture, ...
 * Atari warning (optional)

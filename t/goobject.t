@@ -21,6 +21,9 @@ b = Black()
 
 boards = {
     "white_only": {(1,0):w,(1,1):w,(2,1):w,(2,2):w,(0,3):w,(1,3):w,(2,3):w,(3,3):w,(1,4):w,(2,4):w,(3,4):w,(1,5):w,(2,5):w,(3,5):w},
+    "ll1": { (0,0):w, (1,0):b, (0,1):b },
+    "ll3": { (0,0):w, (1,0):w, (0,1):w, (2,0):b, (1,1):b, (0,2):b },
+    "T1":  { (1,1):w, (0,2):b, (1,2):b, (2,2):b, (0,3):w, (1,3):b, (1,4):w },
     }
 
 
@@ -61,7 +64,7 @@ class BasicAccess(unittest2.TestCase):
 class TestGrouping(unittest2.TestCase):
     """
 python -mtimeit \
--s 'from goobject import GoObject' \
+-s 'from go.goobject import GoObject' \
 -s 'class S(object): pass' \
 -s 'w = S()' \
 -s 'w.stone_color = "white"' \
@@ -75,10 +78,74 @@ python -mtimeit \
         go.board = boards["white_only"].copy()
         the_group = boards["white_only"].keys()
 
-        self.assertItemsEqual(go.get_group(2,3), the_group, 'big group from loc 1')
-        self.assertItemsEqual(go.get_group(1,0), the_group, 'big group from loc 2')
-        self.assertItemsEqual(go.get_group(0,0), [],        'empty location w/neighbor')
-        self.assertItemsEqual(go.get_group(9,9), [],        'empty location no neighbors')
+        self.assertItemsEqual(go.get_group(2,3), the_group, 'get_group: big group from loc 1')
+        self.assertItemsEqual(go.get_group(1,0), the_group, 'get_group: big group from loc 2')
+        self.assertItemsEqual(go.get_group(0,0), [],        'get_group: empty location w/neighbor')
+        self.assertItemsEqual(go.get_group(9,9), [],        'get_group: empty location no neighbors')
+
+        go.board = boards["ll1"].copy()
+        self.assertItemsEqual(go.get_group(0,0), [(0,0)], 'get_group: single item group')
+
+        go.board = boards["ll3"].copy()
+        self.assertItemsEqual(go.get_group(0,0), [(0,0),(1,0),(0,1)], 'get_group: corner group')
+
+        go.board = boards["T1"].copy()
+        self.assertItemsEqual(go.get_group(0,2), [(0,2),(1,2),(2,2),(1,3)], 'get_group: inverted T')
+
+
+class TestGrouping2(unittest2.TestCase):
+
+    def runTest(self):
+        go = GoObject()
+        go.board = boards["white_only"].copy()
+        the_group = boards["white_only"].keys()
+
+        grown = set([(2,3)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, the_group, 'grow_group: big group from loc 1')
+
+        grown = set([(2,3),(2,2)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, the_group, 'grow_group: big group from connected starter set')
+
+        grown = set([(2,3),(3,5)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, the_group, 'grow_group: big group from disconnected starter set')
+
+        grown = set([(1,0)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, the_group, 'grow_group: big group from loc 2')
+
+        go.board = boards["ll1"].copy()
+        grown = set([(0,0)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, [(0,0)], 'grow_group: single item group')
+
+        go.board = boards["ll3"].copy()
+        grown = set([(0,0)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, [(0,0),(1,0),(0,1)], 'grow_group: corner group')
+
+        go.board = boards["T1"].copy()
+        grown = set([(0,2)])
+        go.grow_group(grown)
+        self.assertItemsEqual(grown, [(0,2),(1,2),(2,2),(1,3)], 'grow_group: inverted T')
+
+
+
+class TestLiberties(unittest2.TestCase):
+
+    def runTest(self):
+        go = GoObject()
+
+        go.board = boards["ll1"].copy()
+        self.assertItemsEqual(go.group_liberties(go.get_group(0,0)), [], 'group_liberties: dead item')
+
+        go.board = boards["ll3"].copy()
+        self.assertItemsEqual(go.group_liberties(go.get_group(0,0)), [], 'group_liberties: dead corner group')
+
+        go.board = boards["T1"].copy()
+        self.assertItemsEqual(go.group_liberties(go.get_group(0,2)), [(0,1),(2,1),(3,2),(2,3)], 'group_liberties: alive T')
 
 
 

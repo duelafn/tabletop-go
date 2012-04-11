@@ -67,32 +67,64 @@ class GoObject(object):
         """go.get(i,j, dflt=None) → get index, allowing override of default"""
         return self.board.get((i,j), dflt)
 
-    def get_group(self, i, j, groups=None, color=None):
-        """go.get_group(i,j) → list of indices
+    def get_group(self, i, j):
+        """go.get_group(i,j) → set of indices
 
-        Keyword Args:
-
-        color  - "black" or "white". Default: color of stone at (i,j)
-        groups - dictionary {(a,b): True} of pre-computed group. Default: {}
+        Returns empty set if no stone at (i,j). Else, returns set of
+        indices that are part of the same connected group as the stone at
+        (i,j).
         """
-        groups = groups or {}
+        if not(self[i,j]):
+            return set()
 
-        # Stop if no stole at (i,j), or if we already visited this node
-        if not(self[i,j]) or groups.get((i,j), None):
-            return groups.keys()
+        group = set([(i,j)])
+        self.grow_group(group)
+        return group
 
-        if not color:
-            color = self[i,j].stone_color
+    def grow_group(self, group):
+        """go.grow_group(group)
 
-        if not color == self[i,j].stone_color:
-            return groups.keys()
+        Modify the given set of indices by adding adjacent indices of the
+        same color. Bad things can happen if the given group has mixed
+        colors or contains points without a stone.
+        """
+        if not(group):
+            return
 
-        groups[(i,j)] = True
+        untested = group.copy()
+        seen     = group.copy()
+        x = untested.pop()
+        color = self[x].stone_color
+        untested.add(x)
 
-        for pt in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
-            try:
-                self.get_group(*pt, groups=groups, color=color)
-            except IndexError, err:
-                pass
+        while untested:
+            (i,j) = untested.pop()
+            for pt in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
+                if not(pt in seen):
+                    seen.add(pt)
+                    try:
+                        stone = self[pt]
+                        if stone and stone.stone_color == color:
+                            group.add(pt)
+                            untested.add(pt)
+                    except IndexError, err:
+                        pass
 
-        return groups.keys()
+    def group_liberties(self, group):
+        """go.group_liberties(group) → set of empty points adjacent to the group
+
+        Note: Counts only empty points - does not consider the color of the
+        stones in adjacent slots. Furthermore, strange things might happen
+        if any of the group indices do not have stones.
+        """
+        libs = set()
+
+        for (i,j) in group:
+            for pt in [(i-1,j), (i+1,j), (i,j-1), (i,j+1)]:
+                try:
+                    if not(self[pt]):
+                        libs.add(pt)
+                except IndexError, err:
+                    pass
+
+        return libs

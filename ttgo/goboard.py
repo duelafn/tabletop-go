@@ -11,10 +11,29 @@ from kivy.animation import Animation
 from kivy.factory import Factory
 from kivy.graphics import Rectangle, Line, Color, Ellipse
 from kivy.properties import ObjectProperty, NumericProperty
+from kivy.uix.bubble import Bubble
 from kivy.uix.widget import Widget
 
 from go.goobject import GoObject
 from ttgo.gostone import GoStone
+
+
+class CaptureGroupBubble(Bubble):
+    opponent_pad = ObjectProperty(None)
+    widget = ObjectProperty(None)
+    board = ObjectProperty(None)
+    group = ObjectProperty(None)
+
+    def on_capture(self):
+        self.on_cancel()
+        for pt in self.group:
+            self.widget.remove_widget(self.board[pt])
+            del self.board[pt]
+            self.opponent_pad.captures += 1
+
+    def on_cancel(self):
+        if self.parent:
+            self.parent.remove_widget(self)
 
 
 class GoBoard(Widget):
@@ -92,14 +111,34 @@ class GoBoard(Widget):
         return (x,y)
 
     def on_touch_down(self,touch):
+        if super(GoBoard, self).on_touch_down(touch):
+            return True
+
         if self.collide_point(*touch.pos):
+
+            if self.touch.get("bubble", None):
+                self.touch["bubble"].on_cancel()
+                del self.touch["bubble"]
 
             touch.grab(self)
             tpos = self.to_local(*touch.pos)
             (i, j) = self.find_address( *tpos )
 
             if self.board[i,j]:
-                return
+                group = self.board.get_group(i,j)
+                liberties = self.board.group_liberties(group)
+                if not(liberties):
+                    self.touch["bubble"] = CaptureGroupBubble(
+                        opponent_pad=self.game.opponent_pad(self.board[(i,j)].stone_color),
+                        widget=self,
+                        board=self.board,
+                        group=group
+                        )
+                    self.touch["bubble"].y = touch.y
+                    self.touch["bubble"].center_x = touch.x
+                    self.add_widget( self.touch["bubble"] )
+                else:
+                    return
             else:
                 self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), stone_color=self.game.current_player)
                 self.touch[touch.uid].center = self.address2xy(i,j)

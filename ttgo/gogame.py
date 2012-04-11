@@ -22,6 +22,12 @@ class GoGame(BoxLayout):
         super(GoGame, self).__init__(**kwargs)
         self.pads["black"].activate()
 
+    def pad(self,color):
+        return self.pads[color]
+
+    def opponent_pad(self,color):
+        return self.pads['white' if color == 'black' else 'black']
+
     def on_play(self,i,j,board):
         last = self.current_player
         next = 'white' if last == 'black' else 'black'

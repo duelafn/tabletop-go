@@ -21,15 +21,14 @@ class GoGame(BoxLayout):
 
     def __init__(self, **kwargs):
         super(GoGame, self).__init__(**kwargs)
-        self.pads[0].activate()
+        self.pads["black"].activate()
 
     def on_play(self,i,j):
-        if self.current_player == 'black':
-            self.current_player = 'white'
-            self.pads[0].deactivate()
-            self.pads[1].activate()
-        else:
-            self.current_player = 'black'
-            self.pads[0].activate()
-            self.pads[1].deactivate()
+        last = self.current_player
+        next = 'white' if last == 'black' else 'black'
+
+        self.current_player = next
+        self.pads[next].activate()
+        self.pads[last].deactivate()
+
 Factory.register("GoGame", GoGame)

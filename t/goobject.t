@@ -59,6 +59,27 @@ class BasicAccess(unittest2.TestCase):
         self.assertEqual( go.get(9,9, 42), 42, "get() non-existing" )
         self.assertEqual( go.get(19,19, 42), 42, "get() out of bounds" )
 
+    def test_small_board(self):
+        go = GoObject(points=5)
+        go.board = boards["T1"].copy()
+
+        self.assertEqual( len(go), 7, "len" )
+
+        self.assertEqual( go[1,2], b,  "Getter" )
+        self.assertIsNone( go[0,0],  "Getter for non-existant" )
+        self.assertRaises( IndexError, lambda x: go[5,5], "getter: IndexError when out of bounds" )
+
+        go[0,0] = w
+        def python_lambdas_suck_1(x):
+            go[5,5] = w
+        self.assertEqual( go[0,0], w,     "Setter" )
+        self.assertRaises( IndexError, python_lambdas_suck_1, "setter: IndexError when out of bounds" )
+
+        del go[1,2]
+        self.assertIsNone( go[1,2],  "del" )
+        def python_lambdas_suck_2(x):
+            del go[5,5]
+        self.assertRaises( IndexError, python_lambdas_suck_2, "del: IndexError when out of bounds" )
 
 
 class TestGrouping(unittest2.TestCase):

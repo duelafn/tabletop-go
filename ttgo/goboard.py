@@ -118,7 +118,7 @@ class GoBoard(Widget):
             (i, j) = self.find_address(*self.to_local(*touch.pos))
             stone = self.touch[touch.uid]
             del self.touch[touch.uid]
-            if self.board[i,j]:
+            if self.board[i,j] or not(self.collide_point(*touch.pos)):
                 stone.boom(cb=lambda: self.remove_widget(stone))
             else:
                 self.board[i,j] = stone

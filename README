@@ -27,7 +27,6 @@ TODO
 * options: theme (dynamic + custom path), show turns, auto-capture
 * undo, redo, checkpointing
 * force dead stone clearing
-* consider integerization problem
 * Rule enforcement (optional?): Ko, self-capture, ...
 * Atari warning (optional)
 * Help/usage

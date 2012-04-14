@@ -70,8 +70,9 @@ class GoBoard(Widget):
         self.image.pos  = (x - int(s/2) for x in self.center)
 
         # Calculations
-        self.grid_pos   = (self.image.pos[0] + self.board_pad, self.image.pos[1] + self.board_pad)
         self.box_size   = int( ( s - 2 * self.board_pad ) / self.points )
+        actual_pad = int( (s - self.points * self.box_size) / 2)
+        self.grid_pos   = (self.image.pos[0] + actual_pad, self.image.pos[1] + actual_pad)
 
         # Stone images
         for i in xrange(self.points):

@@ -14,7 +14,7 @@ from kivy.properties import ObjectProperty, NumericProperty
 from kivy.uix.bubble import Bubble
 from kivy.uix.widget import Widget
 
-from go.goobject import GoObject
+from gogame.goobject import GoObject
 from ttgo.gostone import GoStone
 
 

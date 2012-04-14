@@ -3,7 +3,7 @@ import unittest2
 import sys
 sys.path.append("")
 
-from go.goobject import GoObject
+from gogame.goobject import GoObject
 
 
 class White(object):
@@ -85,7 +85,7 @@ class BasicAccess(unittest2.TestCase):
 class TestGrouping(unittest2.TestCase):
     """
 python -mtimeit \
--s 'from go.goobject import GoObject' \
+-s 'from gogame.goobject import GoObject' \
 -s 'class S(object): pass' \
 -s 'w = S()' \
 -s 'w.stone_color = "white"' \

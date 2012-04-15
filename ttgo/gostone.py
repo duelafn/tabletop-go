@@ -10,9 +10,12 @@ import kivy
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.factory import Factory
+from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.image import Image
 from kivy.uix.widget import Widget
+
+from ttgo import ttgo_dir
 
 
 class GoStone(Widget):
@@ -72,3 +75,4 @@ class GoStone(Widget):
             Clock.schedule_once(self.boom,duration/frames)
 
 Factory.register("GoStone", GoStone)
+Builder.load_file(ttgo_dir("gostone.kv"), rulesonly=True)

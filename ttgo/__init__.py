@@ -6,13 +6,23 @@
 from __future__ import division, absolute_import, print_function
 __version__ = "0.1.0"
 
+
+import os.path
+
+ttgo_parent_dir = (os.path.split(__file__))[0]
+def ttgo_dir(path=None):
+    if path is None:
+        return os.path.join(ttgo_parent_dir)
+    else:
+        return os.path.join(ttgo_parent_dir, path)
+
+
 import glob
 import kivy
 
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
-from kivy.lang import Builder
 from kivy.logger import Logger
 
 
@@ -26,13 +36,11 @@ import ttgo.playerpad
 
 class TTGoApp(App):
     title = "TTGo"
-    icon = 'themes/default/black.png'
+    icon = ttgo_dir('data/ttgo.png')
 
     def build(self):
-        kivy.resources.resource_add_path("glyphicons")
-        kivy.resources.resource_add_path("themes/" + self.config.get('ttgo', 'theme'))
-        for kv in glob.glob('ttgo/*.kv'):
-            if kv != 'ttgo/ttgo.kv': Builder.load_file(kv, rulesonly=True)
+        kivy.resources.resource_add_path(ttgo_dir("data/glyphicons"))
+        kivy.resources.resource_add_path(ttgo_dir("data/themes/" + self.config.get('ttgo', 'theme')))
         self.goto_screen("new")
 
     def on_start(self):

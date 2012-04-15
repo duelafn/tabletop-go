@@ -1,6 +1,4 @@
 
 include ChangeLog LICENSE Makefile
-recursive-include glyphicons *.png
-recursive-include themes *.png
-recursive-include ttgo *.kv
+recursive-include ttgo *.kv  *.png
 recursive-include t *.t

@@ -10,12 +10,14 @@ import kivy
 from kivy.animation import Animation
 from kivy.factory import Factory
 from kivy.graphics import Rectangle, Line, Color, Ellipse
+from kivy.lang import Builder
 from kivy.properties import ObjectProperty, NumericProperty
 from kivy.uix.bubble import Bubble
 from kivy.uix.widget import Widget
 
-from gogame.goobject import GoObject
+from ttgo import ttgo_dir
 from ttgo.gostone import GoStone
+from gogame.goobject import GoObject
 
 
 class CaptureGroupBubble(Bubble):
@@ -169,3 +171,4 @@ class GoBoard(Widget):
             return True
 
 Factory.register("GoBoard", GoBoard)
+Builder.load_file(ttgo_dir("goboard.kv"), rulesonly=True)

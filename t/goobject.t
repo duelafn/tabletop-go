@@ -198,6 +198,21 @@ class TestAdjacent(unittest2.TestCase):
         self.assertItemsEqual(go.adjacent_points(2,3),   [(3,3),(2,4)], 'adjacent_points: middle')
 
 
+class TestHandicaps(unittest2.TestCase):
+
+    def test_adjacent_points(self):
+
+        self.assertEqual(GoObject(points=4).handicaps(), [], 'handicaps: 4x4')
+        self.assertEqual(GoObject(points=7).handicaps(), [], 'handicaps: 7x7')
+
+        self.assertEqual(GoObject(points=9).handicaps(),  [(6,6),(2,2),(6,2),(2,6),(4,4)], 'handicaps: 9x9')
+        self.assertEqual(GoObject(points=13).handicaps(), [(9,9),(3,3),(9,3),(3,9),(6,6),(3,6),(9,6),(6,9),(6,3)], 'handicaps: 13x13')
+        self.assertEqual(GoObject(points=19).handicaps(), [(15,15),(3,3),(15,3),(3,15),(9,9),(3,9),(15,9),(9,15),(9,3)], 'handicaps: 19x19')
+
+        self.assertEqual(GoObject(points=10).handicaps(), [(7,7),(2,2),(7,2),(2,7)], 'handicaps: 10x10')
+        self.assertEqual(GoObject(points=11).handicaps(), [(8,8),(2,2),(8,2),(2,8),(5,5)], 'handicaps: 11x11')
+        self.assertEqual(GoObject(points=12).handicaps(), [(8,8),(3,3),(8,3),(3,8)], 'handicaps: 12x12')
+
 
 
 if __name__ == '__main__':

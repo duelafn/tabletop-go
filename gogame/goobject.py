@@ -165,3 +165,22 @@ class GoObject(object):
                 if not(self[pt]):
                     libs.add(pt)
         return libs
+
+
+    def handicaps(self):
+        """Return list of handicap locations in order of filling"""
+        if self.points < 9:
+            return []
+
+        low  = 3 if self.points > 11 else 2
+        high = self.points - low - 1
+        mid  = int( self.points / 2 ) if self.points % 2 else None
+
+        handicaps = [ (high,high), (low,low), (high,low), (low,high) ]
+        if mid:
+            handicaps.append( (mid,mid) )
+
+        if mid and self.points > 11:
+            handicaps.extend([ (low,mid), (high,mid), (mid,high), (mid,low) ])
+
+        return handicaps

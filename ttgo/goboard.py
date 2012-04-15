@@ -62,6 +62,8 @@ class GoBoard(Widget):
             Color(0,0,0)
             self.hlines = [ Line(points=(0,0,1,1)) for i in xrange(self.points) ]
             self.vlines = [ Line(points=(0,0,1,1)) for i in xrange(self.points) ]
+            self.handicaps = [ Ellipse(segments=36) for i in self.board.handicaps() ]
+
         self.rescale(self, self.size)
 
     def rescale(self, obj, size):
@@ -93,6 +95,13 @@ class GoBoard(Widget):
             self.hlines[i].points = [x_min,y,x_max,y]
             self.vlines[i].points = [x,y_min,x,y_max]
 
+        # Handicaps
+        handicap_size = max(6, 2*int(.1 * self.box_size))
+        for i,pt in enumerate(self.board.handicaps()):
+            self.handicaps[i].size = (handicap_size, handicap_size)
+            self.handicaps[i].pos  = self.address2xy(*pt, size=(handicap_size, handicap_size))
+
+
         self.canvas.ask_update()
 
 
@@ -108,9 +117,9 @@ class GoBoard(Widget):
         j = self._clip_to( int(( y - self.grid_pos[1] ) / self.box_size), 0, self.points - 1 )
         return (i,j)
 
-    def address2xy(self, i, j):
-        x = int( self.grid_pos[0] + i * self.box_size + self.box_size / 2 )
-        y = int( self.grid_pos[1] + j * self.box_size + self.box_size / 2 )
+    def address2xy(self, i, j, size=(0,0)):
+        x = int( self.grid_pos[0] + i * self.box_size + self.box_size / 2 ) - int( size[0] / 2 )
+        y = int( self.grid_pos[1] + j * self.box_size + self.box_size / 2 ) - int( size[1] / 2 )
         return (x,y)
 
     def on_touch_down(self,touch):

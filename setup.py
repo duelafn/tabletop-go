@@ -25,7 +25,7 @@ setup(
     author='Dean Serenevy',
     author_email='dean@serenevy.net',
     packages=['ttgo', 'gogame'],
-    scripts=['ttgo.py'],
+    scripts=['bin/ttgo'],
     url='https://github.com/duelafn/tabletop-go',
     license='LICENSE',
     description='Go game built on the kivy framework',

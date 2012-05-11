@@ -7,6 +7,7 @@
     size_hint: (1, 1)
     board: go_board
     pads: { "black": p1_pad, "white": p2_pad }
+    handicap_adder: handicap_adder
 
     # size_hint is assuming a 16:9 layout
     GoBoard:
@@ -21,13 +22,60 @@
 
         PlayerPad:
             id: p1_pad
-            size_hint: (1, .5)
+            size_hint: (1, .46)
             pos_hint:  {'x':0, 'y':.5}
             player: "Black"
             rotation: 180
 
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 5
+            spacing: 10
+            size_hint: (1, .08)
+
+            FloatLayout:
+            FloatLayout:
+            FloatLayout:
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: (1, 1)
+                    pos_hint: {'x':0, 'y':0}
+                    id: handicap_adder
+                    padding: 5
+                    Label:
+                        text: "Handicaps"
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: (None, 1)
+                        width: 34
+                        FloatLayout:
+                        Button:
+                            size_hint: (1, None)
+                            height: 34
+                            on_press: root.board.remove_handicap()
+                            Image:
+                                source: "circle_minus.png"
+                                size: (26,26)
+                                center: self.parent.center
+                        FloatLayout:
+
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: (None, 1)
+                        width: 34
+                        FloatLayout:
+                        Button:
+                            size_hint: (1, None)
+                            height: 34
+                            on_press: root.board.add_handicap()
+                            Image:
+                                source: "circle_plus.png"
+                                size: (26,26)
+                                center: self.parent.center
+                        FloatLayout:
+
         PlayerPad:
             id: p2_pad
-            size_hint: (1, .5)
+            size_hint: (1, .46)
             pos_hint:  {'x':0, 'y':0}
             player: "White"

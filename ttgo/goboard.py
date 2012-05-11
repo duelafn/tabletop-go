@@ -50,9 +50,26 @@ class GoBoard(Widget):
         super(GoBoard, self).__init__(**kwargs)
         self.touch  = {}
         self.board  = GoObject(points=self.points)
+        self.handicaps_used = 0
         self.stones = []
         self.bind(points=self.build)
         self.bind(size=self.rescale, board_pad=self.rescale)
+
+    def add_handicap(self):
+        if self.turn == 1 and self.handicaps_used < len(self.handicaps_available):
+            stone = GoStone(size=(self.box_size,self.box_size), stone_color=self.game.current_player)
+            stone.center = self.address2xy(*self.handicaps_available[self.handicaps_used])
+            self.board[self.handicaps_available[self.handicaps_used]] = stone
+            stone.annotation = "*"
+            self.add_widget( stone )
+            self.handicaps_used += 1
+
+    def remove_handicap(self):
+        if self.turn == 1 and self.handicaps_used > 0:
+            self.handicaps_used -= 1
+            stone = self.board[self.handicaps_available[self.handicaps_used]]
+            del self.board[self.handicaps_available[self.handicaps_used]]
+            stone.boom(cb=lambda: self.remove_widget(stone))
 
     def reload_theme(self):
         ## Doesn't work on the Rectangle(): not sure why not
@@ -64,6 +81,7 @@ class GoBoard(Widget):
 
     def build(self, obj, n):
         self.board.points = self.points
+        self.handicaps_available = self.board.handicaps()
         self.canvas.clear()
         with self.canvas:
             self.image  = Rectangle( source="board.png", size=(100,100) )

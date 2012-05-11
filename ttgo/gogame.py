@@ -32,6 +32,9 @@ class GoGame(BoxLayout):
         return self.pads['white' if color == 'black' else 'black']
 
     def on_play(self,i,j,board):
+        if self.handicap_adder:
+            self.handicap_adder.parent.remove_widget(self.handicap_adder)
+            self.handicap_adder = False
         last = self.current_player
         next = 'white' if last == 'black' else 'black'
 

@@ -23,16 +23,14 @@ immediately removed from the board (this will be fixed in a later release).
 TODO
 ====
 
-* handicaps
 * options: theme (dynamic + custom path), show turns, auto-capture
-* undo, redo, checkpointing
+* undo, redo, checkpointing (gnugo?)
 * force dead stone clearing
-* Rule enforcement (optional?): Ko, self-capture, ...
+* Rule enforcement (gnugo, optional?): Ko, self-capture, ...
 * Atari warning (optional)
 * Help/usage
 * Fullscreen toggle without modesetting
-* Quiet operation (no kivy debugging)
-* scoring? / komi?
+* gnugo: scoring / komi
 
 
 

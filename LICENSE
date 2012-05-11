@@ -7,7 +7,7 @@ Files: *
 Copyright: 2012 Dean Serenevy
 License: GPL-3
 
-Files: glyphicons/*
+Files: ttgo/data/glyphicons/*
 Copyright: 2012 Jan Kovařík
 License: CC-BY-3.0
 Comment: http://glyphicons.com/

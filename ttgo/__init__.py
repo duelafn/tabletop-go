@@ -65,6 +65,12 @@ class TTGoApp(TTApp):
             'theme': 'default'
         })
 
+    def on_config_change(self, config, section, key, value):
+        super(TTGoApp,self).on_config_change(config, section, key, value)
+        if config is self.config:
+            if self.screen == 'game' and (section, key) == (self.app_name, 'theme'):
+                self.root.children[0].board.reload_theme()
+
     def build_settings(self, settings):
         jsondata = """
 [
@@ -73,7 +79,7 @@ class TTGoApp(TTApp):
       "desc": "Board and go piece theme",
       "section": "ttgo",
       "key": "theme",
-      "options": ["default", "missing_theme"]
+      "options": ["default", "fire+ice"]
     }
 ]
 """

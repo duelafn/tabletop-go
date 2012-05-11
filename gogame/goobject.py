@@ -59,9 +59,12 @@ class GoObject(object):
         return iter(self.board)
 
     def __contains__(self, item):
-        """(i,j) in go → boolesn"""
+        """(i,j) in go → boolean"""
         return item in self.board
 
+    def iterstones(self):
+        """iterator over all stones"""
+        return self.board.itervalues()
 
     def get(self, i, j, dflt=None):
         """go.get(i,j, dflt=None) → get index, allowing override of default"""

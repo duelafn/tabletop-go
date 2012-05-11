@@ -23,7 +23,6 @@ immediately removed from the board (this will be fixed in a later release).
 TODO
 ====
 
-* theme paths / installation / ...
 * handicaps
 * options: theme (dynamic + custom path), show turns, auto-capture
 * undo, redo, checkpointing

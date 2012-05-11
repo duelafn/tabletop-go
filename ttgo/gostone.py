@@ -23,6 +23,9 @@ class GoStone(Widget):
     annotation = StringProperty("")
     default_anim_duration = .25
 
+    def toggle_color(self):
+        self.stone_color = "white" if self.stone_color == "black" else "black"
+
     def _alpha(self,alpha,duration=default_anim_duration,shadow=0):
         Animation(color=[1,1,1,alpha]).start(self.image)
         Animation(color=self.label.color[0:3]+[alpha]).start(self.label)

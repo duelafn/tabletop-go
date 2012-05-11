@@ -54,6 +54,14 @@ class GoBoard(Widget):
         self.bind(points=self.build)
         self.bind(size=self.rescale, board_pad=self.rescale)
 
+    def reload_theme(self):
+        ## Doesn't work on the Rectangle(): not sure why not
+        self.image.source = ""
+        self.image.source = "board.png"
+        for stone in self.board.iterstones():
+            stone.toggle_color()
+            stone.toggle_color()
+
     def build(self, obj, n):
         self.board.points = self.points
         self.canvas.clear()

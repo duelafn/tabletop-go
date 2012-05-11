@@ -10,11 +10,8 @@ __version__ = "0.2.0-dev"
 import os.path
 
 ttgo_parent_dir = (os.path.split(__file__))[0]
-def ttgo_dir(path=None):
-    if path is None:
-        return os.path.join(ttgo_parent_dir)
-    else:
-        return os.path.join(ttgo_parent_dir, path)
+def ttgo_dir(*path):
+    return os.path.join(ttgo_parent_dir, *path)
 
 
 import glob
@@ -25,6 +22,7 @@ from kivy.config import Config
 from kivy.core.window import Window
 from kivy.logger import Logger
 
+from ttlib.ttapp import TTApp
 
 from ttgo.gogame import GoGame
 from ttgo.kvwidgets import NewGame
@@ -34,29 +32,16 @@ import ttgo.gostone
 import ttgo.playerpad
 
 
-class TTGoApp(App):
+class TTGoApp(TTApp):
     title = "TTGo"
     icon = ttgo_dir('data/ttgo.png')
 
-    def build(self):
-        kivy.resources.resource_add_path(ttgo_dir("data/glyphicons"))
-        kivy.resources.resource_add_path(ttgo_dir("data/themes/" + self.config.get('ttgo', 'theme')))
-        self.goto_screen("new")
+    def data_dir(self, *args):
+        return os.path.join(ttgo_parent_dir, 'data', *args)
 
-    def on_start(self):
-        Window.bind(on_key_down=self.on_key_down)
-
-    def on_key_down(self, win, key, scancode, string, modifiers):
-        if key == 292:
-            win.toggle_fullscreen()
-            win.update_viewport()
-            return True
-        elif key == 27:
-            if self.screen == "new":
-                exit()
-            else:
-                self.goto_screen("new")
-            return True
+    def __init__(self, *arg, **kwargs):
+        self.app_name = 'ttgo'
+        super(TTGoApp,self).__init__(*arg, **kwargs)
 
     def start_game(self, size):
         try:
@@ -66,11 +51,12 @@ class TTGoApp(App):
         self.goto_screen("game", size=size)
 
     def goto_screen(self, screen_name, **opt):
-        self.root.clear_widgets()
+        super(TTGoApp,self).goto_screen(screen_name, **opt)
+
         if   screen_name == "new":
-            widget = NewGame( app=self, size=self.root.size )
+            widget = NewGame( app=self )
         elif screen_name == "game":
-            widget = GoGame(app=self, points=opt['size'], size=self.root.size)
+            widget = GoGame(app=self, points=opt['size'])
         self.root.add_widget( widget )
         self.screen = screen_name
 
@@ -79,18 +65,9 @@ class TTGoApp(App):
             'theme': 'default'
         })
 
-    def on_config_change(self, config, section, key, value):
-        if config is self.config:
-            token = (section, key)
-            if token == ('ttgo', 'theme'):
-                print( 'changed to theme:', value )
-
     def build_settings(self, settings):
         jsondata = """
-[   { "type": "title",
-      "title": "TTGo"
-    },
-
+[
     { "type": "options",
       "title": "Theme",
       "desc": "Board and go piece theme",
@@ -100,4 +77,4 @@ class TTGoApp(App):
     }
 ]
 """
-        settings.add_json_panel('TTGo application', self.config, data=jsondata)
+        settings.add_json_panel('TTGo', self.config, data=jsondata)

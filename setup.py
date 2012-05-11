@@ -33,6 +33,6 @@ setup(
     package_data={'ttgo': list(ttgo_package_data)},
     install_requires=[
         "Kivy >= 1.2.0",
-        "TabletopLib >= 0.1.0",
+        "TabletopLib >= 0.2.1",
     ],
 )

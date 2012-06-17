@@ -9,7 +9,7 @@ import kivy
 
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, NumericProperty, OptionProperty
+from kivy.properties import ObjectProperty, NumericProperty, OptionProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 
 from ttgo import ttgo_dir
@@ -19,6 +19,7 @@ class GoGame(BoxLayout):
     board = ObjectProperty(None)
     points = NumericProperty(None)
     pads = ObjectProperty(None)
+    dead_stones = ListProperty([])
     current_player = OptionProperty("black", options=["black","white"])
 
     def __init__(self, **kwargs):
@@ -49,6 +50,7 @@ class GoGame(BoxLayout):
 
         # Dim dead groups
         for idx in [ a for a in xrange(len(liberties)) if 0 == len(liberties[a]) ]:
+            self.dead_stones.extend(groups[idx])
             for pt in groups[idx]:
                 board[pt].dim()
 

@@ -20,23 +20,6 @@ from ttgo.gostone import GoStone
 from gogame.goobject import GoObject
 
 
-class CaptureGroupBubble(Bubble):
-    opponent_pad = ObjectProperty(None)
-    widget = ObjectProperty(None)
-    board = ObjectProperty(None)
-    group = ObjectProperty(None)
-
-    def on_capture(self):
-        self.on_cancel()
-        for pt in self.group:
-            self.widget.remove_widget(self.board[pt])
-            del self.board[pt]
-            self.opponent_pad.captures += 1
-
-    def on_cancel(self):
-        if self.parent:
-            self.parent.remove_widget(self)
-
 
 class GoBoard(Widget):
     game       = ObjectProperty(None)
@@ -148,35 +131,26 @@ class GoBoard(Widget):
         y = int( self.grid_pos[1] + j * self.box_size + self.box_size / 2 ) - int( size[1] / 2 )
         return (x,y)
 
+    def clear_dead_stones(self):
+        while self.game.dead_stones:
+            pt = self.game.dead_stones.pop()
+            self.game.opponent_pad(self.board[pt].stone_color).captures += 1
+            self.remove_widget(self.board[pt])
+            del self.board[pt]
+
     def on_touch_down(self,touch):
         if super(GoBoard, self).on_touch_down(touch):
             return True
 
         if self.collide_point(*touch.pos):
-
-            if self.touch.get("bubble", None):
-                self.touch["bubble"].on_cancel()
-                del self.touch["bubble"]
+            self.clear_dead_stones()
 
             touch.grab(self)
             tpos = self.to_local(*touch.pos)
             (i, j) = self.find_address( *tpos )
 
             if self.board[i,j]:
-                group = self.board.get_group(i,j)
-                liberties = self.board.group_liberties(group)
-                if not(liberties):
-                    self.touch["bubble"] = CaptureGroupBubble(
-                        opponent_pad=self.game.opponent_pad(self.board[(i,j)].stone_color),
-                        widget=self,
-                        board=self.board,
-                        group=group
-                        )
-                    self.touch["bubble"].y = touch.y
-                    self.touch["bubble"].center_x = touch.x
-                    self.add_widget( self.touch["bubble"] )
-                else:
-                    return
+                return
             else:
                 self.touch[touch.uid] = GoStone(size=(self.box_size,self.box_size), stone_color=self.game.current_player)
                 self.touch[touch.uid].center = self.address2xy(i,j)
@@ -199,6 +173,13 @@ class GoBoard(Widget):
                 stone.boom(cb=lambda: self.remove_widget(stone))
             else:
                 self.board[i,j] = stone
+
+                # No self capture:
+                if 0 == len(self.board.group_liberties(self.board.get_group(i,j))):
+                    del self.board[i,j]
+                    stone.boom(cb=lambda: self.remove_widget(stone))
+                    return True
+
                 self.turn += 1
                 self.game.on_play(i, j, self.board)
                 ani = Animation( d=.1, t='in_out_sine', center=self.address2xy(i,j) )
@@ -206,4 +187,3 @@ class GoBoard(Widget):
             return True
 
 Factory.register("GoBoard", GoBoard)
-Builder.load_file(ttgo_dir("goboard.kv"), rulesonly=True)

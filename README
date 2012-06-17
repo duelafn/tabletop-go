@@ -14,20 +14,21 @@ computers as long as you can install the kivy framework.
 Status
 ======
 
-The game is currently playable. Interface should be functional if not
-always friendly. Some oddities can come up if captured stones are not
-immediately removed from the board (this will be fixed in a later release).
+The game is now playable. Interface should be functional and should not
+crash or get into an inconsistent state. Stones are auto-reaped when the
+next stone is placed and stone suicide is prohibited. The rule of Ko is not
+enforced.
 
 
 
 TODO
 ====
 
-* options: theme (dynamic + custom path), show turns, auto-capture
+* theme (dynamic + custom path)
+* option to disable turns numbers
 * undo, redo, checkpointing (gnugo?)
-* force dead stone clearing
-* Rule enforcement (gnugo, optional?): Ko, self-capture, ...
-* Atari warning (optional)
+* Rule enforcement (gnugo?): Ko
+* Make Atari warning optional
 * Help/usage
 * Fullscreen toggle without modesetting
 * gnugo: scoring / komi
